@@ -1,0 +1,116 @@
+---
+title: "hw3.Rmd"
+author: "Juan Simons, Github: Giltbuckle3"
+date: "2/17/2020"
+output: html_document
+---
+
+```{r}
+data(tips, package="reshape2")
+library(ggplot2)
+```
+
+#Question 1
+There are a total of 244 rows, 4 of which contain a size of 1. With my understanding, a party requires more than a single person, therefore, the waitor served a total of 240 parties.
+```{r}
+parties <- subset(tips, size== 1, select = c(size))
+numParty <- 240
+numParty
+```
+
+#Question 2
+Most of the variables are of the integer type, except *total_bill* and *tip*, these have the type of double. The reason being is that these 2 variables represent mony, which includes dollar and cent values. The rest of the variables represent simpler values.
+```{r}
+typeof(tips$total_bill)
+typeof(tips$tip)
+typeof(tips$sex)
+typeof(tips$smoker)
+typeof(tips$day)
+typeof(tips$time)
+typeof(tips$size)
+```
+
+#Question 3
+```{r}
+day<- levels(factor(tips$day, levels=c('Thur','Fri','Sat','Sun')))
+day
+```
+
+#Question 4
+```{r}
+female5<-tips[tips$sex =='Female' & tips$size >= 5, ]
+female5
+```
+
+#Question 5
+As we can see in the chart bellow, there is a relatively linear correlation between the *toal_bill* and *tip*. We see that the higher the amount of the bill, the higher the tip will be.
+```{r}
+ggplot(aes(x = total_bill, y = tip,
+           color='red'), data=tips) + geom_point()
+```
+
+#Question 6
+There are two really noticeable anomalies in this graph which are far away from most of the group of tips. These points are the one close to *2.5* on the **x** axis and to *5* on the **y** axis; the other is located near *35* on the **x** axis and *1.5* on the **y** axis. The first anomaly we see someone that is tipping more than the average party with the same amount of money spent on the bill. With a little bit of code we see that the party only spent *$7.25* on the bill, yet they decided to give *$5.15* on the tip, they probably felt like making someone's day. The second anomaly we see that a party barely wanted to tip even though the average, compared to his bill amount, gives decent tips. The bill for this case was *$32.83* and the tip was *$1.17*. It is possible they thought that the waiter gave bad service or the food was bad? These situations are quite unpredictable really.
+```{r}
+bad_Tips<-tips[tips$tip >= 5, ]
+bad_Tips
+```
+```{r}
+bad_Tips1<-tips[tips$tip <= 1.5, ]
+bad_Tips1
+```
+
+#Question 7
+As we see below, the average of tips is 2.84.
+```{r}
+rate<-tips$tip/tips$total_bill-tips$tip
+tiprate<-abs(mean(rate))
+tiprate
+```
+
+#Question 8
+```{r}
+#timeBox<-ggplot(tips, aes(x=time, y=tiprate,  )) +
+ #        theme_bw() +
+  #       geom_boxplot(position="dodge", stat="identity") +
+   #      scale_fill_manual(values=c("blue", "red"))
+#timeBox
+```
+
+#Question 9
+(Note, the graph needs to be full screen in order to visualize data appropiately)
+In the graph below we have 2 subgraphs. The first represents the Female sex and the second, the male sex. There are two colors within the lines of the graph. If the line is blue, they are not a smoker, if red, they are a smoker. We see that females who do not smoke tend to pay more tips, tip amount increases whith the *total_amount*, than females who smoke. In the male graph, it is somewhat spread out. We see that the tip amount is higher from smokers up to a certain point in the graph but then drops if the bill amount exceeds that point (which is about **$25**). Once the bill amount is over that, non-smokers tend to tip more.
+```{r}
+smokeBar<-ggplot(tips, aes(x=total_bill, y=tip, fill=smoker)) +
+         theme_bw() +
+         geom_bar(position="stack", stat="identity") +
+         scale_fill_manual(values=c("blue", "red")) +
+         facet_grid(. ~ sex, space="free_x", scales="free_x",
+             labeller=label_both)
+smokeBar
+```
+
+#Question 10
+
+``{r}
+dayBar<-ggplot(tips,aes(x=day, y=plzWork, fill=sex)) +
+         theme_bw() +
+         geom_bar(position="dodge", stat="identity")+ scale_fill_manual(values=c("blue", "red"))
+dayBar
+```
+```{r}
+library(dummies)
+sexDummy<-dummy(tips$sex)
+sexDummy
+newDf<- c('total_bill', 'tip', sexDummy, 'day')
+newDf
+```
+```{r}
+plzWork<-as.integer(tips$sex)
+plzWork
+```
+
+```{r}
+cbind(tips,plzWork)
+#plzWork2
+```
