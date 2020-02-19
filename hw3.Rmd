@@ -69,12 +69,12 @@ tiprate
 ```
 
 #Question 8
+The boxplots are very similar to eachother, there is one outlier though, the medians of the plots. On the *Lunch* plot we see that the median is lower than the *Dinner* plot.
 ```{r}
-#timeBox<-ggplot(tips, aes(x=time, y=tiprate,  )) +
- #        theme_bw() +
-  #       geom_boxplot(position="dodge", stat="identity") +
-   #      scale_fill_manual(values=c("blue", "red"))
-#timeBox
+tiprate <- tips$tip / (tips$total_bill - tips$tip)
+boxChart<- ggplot(tips, aes(x=time, y=tiprate)) + 
+  geom_boxplot() + scale_x_discrete(limits=c("Lunch", "Dinner")) + labs(x = "Time", y = "Tip rate", title = "Time of Day Vs Tiprate")
+boxChart
 ```
 
 #Question 9
@@ -91,26 +91,9 @@ smokeBar
 ```
 
 #Question 10
-
-``{r}
-dayBar<-ggplot(tips,aes(x=day, y=plzWork, fill=sex)) +
-         theme_bw() +
-         geom_bar(position="dodge", stat="identity")+ scale_fill_manual(values=c("blue", "red"))
-dayBar
-```
+As we see below, females tend to pay more often on Thursdays and Fridays, whereas men, pay more on Saturdays and Sundays. The increase in men paying in the weekend is probably due to men going on dates and then paying for the date and or simply paying for the party.
 ```{r}
-library(dummies)
-sexDummy<-dummy(tips$sex)
-sexDummy
-newDf<- c('total_bill', 'tip', sexDummy, 'day')
-newDf
-```
-```{r}
-plzWork<-as.integer(tips$sex)
-plzWork
-```
-
-```{r}
-cbind(tips,plzWork)
-#plzWork2
+dayBars<- ggplot(tips, aes(day,sex)) +
+  geom_jitter(aes(colour = tips$sex)) + labs(x = "Day of the Week", y = "Gender", title = "Gender vs Weekday",colour = "Gender Color")
+dayBars
 ```
